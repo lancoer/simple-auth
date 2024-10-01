@@ -1,15 +1,11 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import { ConfirmOptions, Keypair, PublicKey } from "@solana/web3.js";
+import { expect } from "chai";
 
 import { SimpleAuth } from "../target/types/simple_auth";
 
-import {
-  createAccount,
-  initializeAccount,
-  authenticateAccount,
-  deauthenticateAccount,
-} from "./utils"; // Utility functions for account management
+import { getAuthenticationStateAddress } from "./pda";
 
 describe("simple-auth", () => {
   // Configure the client to use the local cluster.
@@ -17,85 +13,74 @@ describe("simple-auth", () => {
 
   const program = anchor.workspace.SimpleAuth as Program<SimpleAuth>;
 
-  it("Is initialized!", async () => {
-    // Add your test here.
-    const tx = await program.methods.initialize().rpc();
-    console.log("Your transaction signature", tx);
+  const confirmOptions: ConfirmOptions = {
+    skipPreflight: true,
+  };
+
+  let userPubkey: PublicKey;
+
+  before(async () => {
+    const userKeypair = Keypair.generate();
+    userPubkey = userKeypair.publicKey;
   });
 
-  let userKeypair: Keypair;
-  let authenticationAccountPubkey: PublicKey;
+  it("should initialize the authentication state account", async () => {
+    const tx = await program.methods.initialize(userPubkey).rpc(confirmOptions);
+    console.log("Initialize transaction signature", tx);
 
-  beforeEach(async () => {
-    userKeypair = Keypair.generate();
-    authenticationAccountPubkey = await createAccount(provider, userKeypair); // Create a new authentication account
-  });
+    const [authenticationStateAddress] = getAuthenticationStateAddress(
+      userPubkey,
+      program.programId
+    );
+    console.log("Authentication State", authenticationStateAddress);
 
-  it("should initialize the authentication account", async () => {
-    await initializeAccount(
-      provider,
-      program,
-      authenticationAccountPubkey,
-      userKeypair
+    const authenticationState = await program.account.authenticationState.fetch(
+      authenticationStateAddress
     );
 
-    const account = await program.account.authenticationAccount.fetch(
-      authenticationAccountPubkey
-    );
-
-    expect(account.isAuthenticated).to.be.false;
-    expect(account.nonce).to.equal(0);
+    expect(authenticationState.isAuthenticated).to.be.false;
+    expect(authenticationState.nonce).to.equal(0);
   });
 
   it("should authenticate the user", async () => {
-    await initializeAccount(
-      provider,
-      program,
-      authenticationAccountPubkey,
-      userKeypair
-    ); // Ensure it's initialized first
+    const tx = await program.methods
+      .authenticate()
+      .accounts({ user: userPubkey })
+      .rpc(confirmOptions);
+    console.log("Authenticate transaction signature", tx);
 
-    await authenticateAccount(
-      provider,
-      program,
-      authenticationAccountPubkey,
-      userKeypair
+    const [authenticationStateAddress] = getAuthenticationStateAddress(
+      userPubkey,
+      program.programId
+    );
+    console.log("Authentication State", authenticationStateAddress);
+
+    const authenticationState = await program.account.authenticationState.fetch(
+      authenticationStateAddress
     );
 
-    const account = await program.account.authenticationAccount.fetch(
-      authenticationAccountPubkey
-    );
-
-    expect(account.isAuthenticated).to.be.true;
-    expect(account.nonce).to.equal(1); // nonce should increment
+    expect(authenticationState.isAuthenticated).to.be.true;
+    expect(authenticationState.nonce).to.equal(1); // nonce should increment
   });
 
   it("should deauthenticate the user", async () => {
-    await initializeAccount(
-      provider,
-      program,
-      authenticationAccountPubkey,
-      userKeypair
-    ); // Ensure it's initialized first
-    await authenticateAccount(
-      provider,
-      program,
-      authenticationAccountPubkey,
-      userKeypair
-    ); // Authenticate first
+    const tx = await program.methods
+      .deauthenticate()
+      .accounts({ user: userPubkey })
+      .rpc(confirmOptions);
+    console.log("Deauthenticate transaction signature", tx);
 
-    await deauthenticateAccount(
-      provider,
-      program,
-      authenticationAccountPubkey,
-      userKeypair
+    const [authenticationStateAddress] = getAuthenticationStateAddress(
+      userPubkey,
+      program.programId
+    );
+    console.log("Authentication State", authenticationStateAddress);
+
+    const authenticationState = await program.account.authenticationState.fetch(
+      authenticationStateAddress
     );
 
-    const account = await program.account.authenticationAccount.fetch(
-      authenticationAccountPubkey
-    );
-
-    expect(account.isAuthenticated).to.be.false;
-    expect(account.nonce).to.equal(2); // nonce should increment again
+    expect(authenticationState.isAuthenticated).to.be.false;
+    expect(authenticationState.nonce).to.equal(2); // nonce should increment again
   });
 });
