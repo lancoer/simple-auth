@@ -7,10 +7,10 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-simple_auth = "AGMbtK5VeHwtQjmFMBDxJP2dJa7ynyw7qswksStxaBbt"
+simple_auth = "3wXUKJWB3eKzxC7d3YMdoVcHJfzadK4fTHt2pMwiXPAH"
 
 [programs.mainnet]
-simple_auth = "AGMbtK5VeHwtQjmFMBDxJP2dJa7ynyw7qswksStxaBbt"
+simple_auth = "3wXUKJWB3eKzxC7d3YMdoVcHJfzadK4fTHt2pMwiXPAH"
 
 [registry]
 url = ""

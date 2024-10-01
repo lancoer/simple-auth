@@ -17,7 +17,7 @@ pub struct Deauthenticate<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn deauthenticate(ctx: Context<Deauthenticate>) -> Result<()> {
+pub fn deauthenticate(ctx: Context<Deauthenticate>, _: Pubkey) -> Result<()> {
     let authentication_state = &mut ctx.accounts.authentication_state;
 
     authentication_state.is_authenticated = false;

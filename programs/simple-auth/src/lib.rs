@@ -8,9 +8,9 @@ use anchor_lang::prelude::*;
 use instructions::*;
 
 #[cfg(feature = "devnet")]
-declare_id!("AGMbtK5VeHwtQjmFMBDxJP2dJa7ynyw7qswksStxaBbt");
+declare_id!("3wXUKJWB3eKzxC7d3YMdoVcHJfzadK4fTHt2pMwiXPAH");
 #[cfg(not(feature = "devnet"))]
-declare_id!("AGMbtK5VeHwtQjmFMBDxJP2dJa7ynyw7qswksStxaBbt");
+declare_id!("3wXUKJWB3eKzxC7d3YMdoVcHJfzadK4fTHt2pMwiXPAH");
 
 pub mod admin {
     use anchor_lang::prelude::declare_id;
@@ -29,11 +29,11 @@ pub mod simple_auth {
         instructions::initialize(ctx, user)
     }
 
-    pub fn authenticate(ctx: Context<Authenticate>) -> Result<()> {
-        instructions::authenticate(ctx)
+    pub fn authenticate(ctx: Context<Authenticate>, user: Pubkey) -> Result<()> {
+        instructions::authenticate(ctx, user)
     }
 
-    pub fn deauthenticate(ctx: Context<Deauthenticate>) -> Result<()> {
-        instructions::deauthenticate(ctx)
+    pub fn deauthenticate(ctx: Context<Deauthenticate>, user: Pubkey) -> Result<()> {
+        instructions::deauthenticate(ctx, user)
     }
 }

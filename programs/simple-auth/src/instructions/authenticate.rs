@@ -17,7 +17,7 @@ pub struct Authenticate<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn authenticate(ctx: Context<Authenticate>) -> Result<()> {
+pub fn authenticate(ctx: Context<Authenticate>, _: Pubkey) -> Result<()> {
     let authentication_state = &mut ctx.accounts.authentication_state;
 
     authentication_state.is_authenticated = true;
