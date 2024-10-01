@@ -1,6 +1,15 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
+import { Keypair, PublicKey } from "@solana/web3.js";
+
 import { SimpleAuth } from "../target/types/simple_auth";
+
+import {
+  createAccount,
+  initializeAccount,
+  authenticateAccount,
+  deauthenticateAccount,
+} from "./utils"; // Utility functions for account management
 
 describe("simple-auth", () => {
   // Configure the client to use the local cluster.
@@ -13,26 +22,6 @@ describe("simple-auth", () => {
     const tx = await program.methods.initialize().rpc();
     console.log("Your transaction signature", tx);
   });
-});
-
-import { Program } from "@project-serum/anchor";
-import { Keypair, PublicKey } from "@solana/web3.js";
-import { expect } from "chai";
-import {
-  AuthenticationAccount,
-  IDL,
-} from "../target/types/authentication_program"; // Adjust the path as necessary
-import {
-  createAccount,
-  initializeAccount,
-  authenticateAccount,
-  deauthenticateAccount,
-} from "./utils"; // Utility functions for account management
-
-describe("authentication_program", () => {
-  const provider = anchor.AnchorProvider.env();
-  anchor.setProvider(provider);
-  const program = anchor.workspace.AuthenticationProgram as Program<IDL>;
 
   let userKeypair: Keypair;
   let authenticationAccountPubkey: PublicKey;

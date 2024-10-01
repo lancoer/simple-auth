@@ -1,8 +1,9 @@
-import { Program } from "@project-serum/anchor";
+import * as anchor from "@coral-xyz/anchor";
+import { Program, AnchorProvider } from "@coral-xyz/anchor";
 import { Keypair } from "@solana/web3.js";
 
 export async function createAccount(
-  provider: anchor.AnchorProvider,
+  provider: AnchorProvider,
   userKeypair: Keypair
 ) {
   const authenticationAccount = Keypair.generate();
@@ -23,7 +24,7 @@ export async function createAccount(
 }
 
 export async function initializeAccount(
-  provider: anchor.AnchorProvider,
+  provider: AnchorProvider,
   program: Program<IDL>,
   authenticationPublicKey: PublicKey,
   userKeypair: Keypair
@@ -39,7 +40,7 @@ export async function initializeAccount(
 }
 
 export async function authenticateAccount(
-  provider: anchor.AnchorProvider,
+  provider: AnchorProvider,
   program: Program<IDL>,
   authenticationPublicKey: PublicKey,
   userKeypair: Keypair
@@ -54,7 +55,7 @@ export async function authenticateAccount(
 }
 
 export async function deauthenticateAccount(
-  provider: anchor.AnchorProvider,
+  provider: AnchorProvider,
   program: Program<IDL>,
   authenticationPublicKey: PublicKey,
   userKeypair: Keypair

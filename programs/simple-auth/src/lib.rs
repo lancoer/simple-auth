@@ -25,8 +25,8 @@ pub mod admin {
 pub mod simple_auth {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        instructions::initialize(ctx)
+    pub fn initialize(ctx: Context<Initialize>, user: Pubkey) -> Result<()> {
+        instructions::initialize(ctx, user)
     }
 
     pub fn authenticate(ctx: Context<Authenticate>) -> Result<()> {
